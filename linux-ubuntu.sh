@@ -4,7 +4,6 @@
 # @since       0.0.1
 
 OPTIONS=$(getopt -o f:l: -l app-name:,sub-name:,cx-region:,api-key:,monitor-containers: -n "$0" -- "$@")
-
 if [ $? -ne 0 ]; then
     echo "Invalid option"
     exit 1
