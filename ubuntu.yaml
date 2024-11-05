@@ -25,7 +25,7 @@ processors:
 exporters:
   coralogix:
     domain: 'ap3.coralogix.com'
-    private_key: 'cxtp_MLuAlLTx7Y9dkwHsoKIDoY1nCHHN2f'
+    private_key: 'APIKEY'
     subsystem_name_attributes:
       - 'host.name'
     application_name: 'linux'
