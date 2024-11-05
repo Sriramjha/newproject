@@ -1,0 +1,45 @@
+receivers:
+  filelog:
+    include:
+      - /var/log/secure
+      - /var/log/audit/audit.log
+      - /var/log/messages
+processors:
+  batch: {}
+  resourcedetection/env:
+    detectors: [env, system]
+    system:
+      hostname_sources: ['os']
+      resource_attributes:
+        host.id:
+          enabled: true
+  resourcedetection/cloud:
+    detectors: ['gcp', 'ec2', 'azure']
+    timeout: 2s
+    override: false
+    ec2:
+      resource_attributes:
+        cloud.availability_zone:
+          enabled: true
+        cloud.region:
+          enabled: true
+exporters:
+  coralogix:
+    domain: 'ap3.coralogix.com'
+    private_key: 'APIKEY'
+    subsystem_name_attributes:
+      - 'host.name'
+    application_name: 'linux'
+    subsystem_name: 'linux-logs'
+    timeout: 30s
+service:
+  pipelines:
+    logs:
+      receivers:
+        - filelog
+      processors:
+        - resourcedetection/env
+        - resourcedetection/cloud
+        - batch
+      exporters:
+        - coralogix
