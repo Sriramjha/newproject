@@ -30,6 +30,9 @@ cx_region_endpoint_resolver() {
         "AP2")
             echo "coralogixsg.com"
             ;;
+        "AP3")
+            echo "ap3.coralogix.com"
+            ;;            
     esac
 }
 
@@ -58,7 +61,7 @@ machine_architecture_resolver() {
 
 validate_api_key() {
     key=$1
-    if [[ $key =~ ^cxt[ph]_[A-z0-9]{30}$|^[0-9A-f]{8}\-[0-9A-f]{4}\-[0-9A-f]{4}\-[0-9A-f]{4}\-[0-9A-f]{12}$ ]]; then
+    if [[ $key =~ ^cxt[ph]_[A-Za-z0-9]{30}$|^[0-9A-f]{8}\-[0-9A-f]{4}\-[0-9A-f]{4}\-[0-9A-f]{4}\-[0-9A-f]{12}$ ]]; then
         return 0
     else
         return 1
@@ -77,22 +80,22 @@ while true; do
     case "$1" in
         --app-name)
             app_name="$2"
-            if ! [[ "$app_name" =~ ^[A-z0-9\_\@\.\-]{3,50}$ ]]; then
+            if ! [[ "$app_name" =~ ^[A-Za-z0-9\_\@\.\-]{3,50}$ ]]; then
                 echo "Error: Invalid application name format. should be a string with 3 to 50 characters."
                 exit 1
             fi
             shift 2;;
         --sub-name)
             sub_name="$2"
-            if ! [[ "$sub_name" =~ ^[A-z0-9\_\@\.\-]{3,50}$ ]]; then
+            if ! [[ "$sub_name" =~ ^[A-Za-z0-9\_\@\.\-]{3,50}$ ]]; then
                 echo "Error: Invalid subsystem name format. should be a string with 3 to 50 characters."
                 exit 1
             fi
             shift 2;;
         --cx-region)
             cx_region=$(cx_region_endpoint_resolver "$2")
-            if ! [[ "$2" =~ ^(EU|AP|US)[12]$ ]]; then
-                echo "Error: Invalid cx-region format. should follow the regex ^(EU|AP|US)[12]$"
+            if ! [[ "$2" =~ ^(EU|AP|US)[123]$ ]]; then
+                echo "Error: Invalid cx-region format. should follow the regex ^(EU|AP|US)[123]$"
                 exit 1
             fi
             shift 2;;
@@ -137,8 +140,8 @@ fi
 otel_conf="receivers:
   filelog:
     include:
-      - /var/log/*.log
-      $docker_input
+      - /var/log/auth.log
+      - /var/log/syslog
 processors:
   batch: {}
   resourcedetection/env:
